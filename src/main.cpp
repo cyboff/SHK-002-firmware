@@ -533,17 +533,17 @@ void setup()
   pinMode(A10, INPUT); // analog input P differential for PGA
   pinMode(A11, INPUT); // analog input N differential for PGA
 
-  adc->setAveraging(ADC0_AVERAGING, ADC_0); // set number of averages
-  adc->setResolution(9, ADC_0);             // set bits of resolution - 9 bit for differential
+  adc->adc0->setAveraging(ADC0_AVERAGING); // set number of averages
+  adc->adc0->setResolution(9);             // set bits of resolution - 9 bit for differential
 
   // it can be ADC_VERY_LOW_SPEED, ADC_LOW_SPEED, ADC_MED_SPEED, ADC_HIGH_SPEED_16BITS, ADC_HIGH_SPEED or ADC_VERY_HIGH_SPEED
   // see the documentation for more information
-  adc->setConversionSpeed(ADC_CONVERSION_SPEED::VERY_HIGH_SPEED, ADC_0); // change the conversion speed
+  adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::VERY_HIGH_SPEED); // change the conversion speed
   // it can be ADC_VERY_LOW_SPEED, ADC_LOW_SPEED, ADC_MED_SPEED, ADC_HIGH_SPEED or ADC_VERY_HIGH_SPEED
-  adc->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_HIGH_SPEED, ADC_0); // change the sampling speed
-  //adc->setReference(ADC_REFERENCE::REF_1V2, ADC_0); // use default 3.3V for input signal > 1.2V
+  adc->adc0->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_HIGH_SPEED); // change the sampling speed
+  //adc->adc0->setReference(ADC_REFERENCE::REF_1V2); // use default 3.3V for input signal > 1.2V
 
-  adc->enablePGA(pga, ADC_0);
+  adc->adc0->enablePGA(pga);
 
   // Lets setup Analog 0 dma
   adc0_dma.source((volatile uint16_t &)ADC0_RA);
@@ -555,10 +555,10 @@ void setup()
 
   // ADC1 for internal temperature measurement
 
-  adc->setAveraging(32, ADC_1);                                         // set number of averages
-  adc->setResolution(12, ADC_1);                                        // set bits of resolution
-  adc->setConversionSpeed(ADC_CONVERSION_SPEED::VERY_LOW_SPEED, ADC_1); // change the conversion speed
-  adc->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_LOW_SPEED, ADC_1);     // change the sampling speed
+  adc->adc1->setAveraging(32);                                         // set number of averages
+  adc->adc1->setResolution(12);                                        // set bits of resolution
+  adc->adc1->setConversionSpeed(ADC_CONVERSION_SPEED::VERY_LOW_SPEED); // change the conversion speed
+  adc->adc1->setSamplingSpeed(ADC_SAMPLING_SPEED::VERY_LOW_SPEED);     // change the sampling speed
 
   // read once for setup everything
   //adc->analogReadDifferential(A10, A11, ADC_0);             //start ADC_0 differential
@@ -2837,11 +2837,11 @@ void callback_delay()
     //adc0_busy = 1;
 
     // update PGA
-    adc->enablePGA(pga, ADC_0);
+    adc->adc0->enablePGA(pga);
     adc->analogReadDifferential(A10, A11, ADC_0); //start ADC_0 differential
 
     //adc0_dma.enable();
-    adc->enableDMA(ADC_0);
+    adc->adc0->enableDMA();
     adc0_dma.enable();
 
     NVIC_DISABLE_IRQ(IRQ_PDB);
@@ -2869,7 +2869,7 @@ void adc0_dma_isr(void)
 
   adc->adc0->stopPDB();
   adc0_dma.disable();
-  adc->disableDMA(ADC_0);
+  adc->adc0->disableDMA();
   adc0_dma.disable();
 
   for (int i = 0; i < ANALOG_BUFFER_SIZE; i++) // copy DMA buffer
